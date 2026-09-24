@@ -1,4 +1,13 @@
 import mongoose from 'mongoose';
+import dns from 'dns';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+// Ensure SRV records resolve reliably across all networks
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (e) {}
 
 const connectDB = async () => {
   try {
