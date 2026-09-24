@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <!-- Background Outer Glow & Radial Fill -->
+    <radialGradient id="sphereBg" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#2dd4bf" />
+      <stop offset="50%" stop-color="#0d9488" />
+      <stop offset="100%" stop-color="#042f2e" />
+    </radialGradient>
+
+    <!-- Cart Metallic Gradient -->
+    <linearGradient id="cartGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="60%" stop-color="#e0f2fe" />
+      <stop offset="100%" stop-color="#bae6fd" />
+    </linearGradient>
+
+    <!-- Glowing Sphere Inside Basket -->
+    <radialGradient id="innerOrb" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="40%" stop-color="#38bdf8" />
+      <stop offset="80%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#0369a1" />
+    </radialGradient>
+
+    <!-- Filter Drop Shadow -->
+    <filter id="cartGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#14b8a6" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Ambient Outer Halo -->
+  <circle cx="50" cy="50" r="46" fill="url(#sphereBg)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" />
+  
+  <!-- Subtle Ring Reflection -->
+  <ellipse cx="50" cy="22" rx="28" ry="10" fill="rgba(255,255,255,0.15)" />
+
+  <!-- Luminous Orb Floating Inside Cart -->
+  <circle cx="55" cy="40" r="10" fill="url(#innerOrb)" filter="url(#cartGlow)" />
+  <circle cx="52" cy="37" r="3" fill="#ffffff" opacity="0.8" />
+
+  <!-- Modern Shopping Cart Geometry -->
+  <g filter="url(#cartGlow)">
+    <!-- Cart Basket Body -->
+    <path 
+      d="M26 32 L34 32 L44 60 L68 60 L78 39 L37 39" 
+      stroke="url(#cartGold)" 
+      stroke-width="5" 
+      stroke-linecap="round" 
+      stroke-linejoin="round"
+    />
+    
+    <!-- Cart Grid Divider Lines -->
+    <path d="M49 46 L73 46" stroke="rgba(255,255,255,0.45)" stroke-width="2.5" stroke-linecap="round" />
+    <path d="M54 40 L52 59" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round" />
+    <path d="M64 40 L62 59" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round" />
+
+    <!-- Cart Wheel 1 -->
+    <circle cx="46" cy="71" r="5" fill="#ffffff" stroke="#0d9488" stroke-width="2" />
+    <!-- Cart Wheel 2 -->
+    <circle cx="66" cy="71" r="5" fill="#ffffff" stroke="#0d9488" stroke-width="2" />
+  </g>
+</svg>

@@ -1,0 +1,296 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #04060b;
+    color: #f1f5f9;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+}
+
+@theme {
+  --color-brand-50: #f0fdfa;
+  --color-brand-100: #ccfbf1;
+  --color-brand-400: #2dd4bf;
+  --color-brand-500: #14b8a6;
+  --color-brand-600: #0d9488;
+  --color-brand-900: #134e4a;
+  --color-dark-950: #020306;
+  --color-dark-900: #04060b;
+  --color-dark-850: #080c16;
+  --color-dark-800: #0e1526;
+  --color-dark-700: #1a233a;
+  --animate-fade-in: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-slide-up: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 3D Glassmorphism Panels */
+.glass-panel {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.glass-panel-3d {
+  background: linear-gradient(145deg, rgba(20, 184, 166, 0.06) 0%, rgba(15, 23, 42, 0.4) 50%, rgba(0, 0, 0, 0.6) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.7),
+    0 0 35px rgba(20, 184, 166, 0.06),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.5);
+}
+
+/* 3D Spatial Presets */
+.preserve-3d {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.perspective-1500 {
+  perspective: 1500px;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* 3D Spatial Perspective Floor Grid */
+.perspective-grid {
+  background-image: 
+    linear-gradient(to right, rgba(20, 184, 166, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(20, 184, 166, 0.08) 1px, transparent 1px);
+  background-size: 50px 50px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, #000 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, #000 30%, transparent 80%);
+}
+
+/* Premium Metallic Gradient Text */
+.text-metallic-gold {
+  background: linear-gradient(135deg, #fff 20%, #fef08a 60%, #eab308 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-metallic-cyan {
+  background: linear-gradient(135deg, #ffffff 0%, #a5f3fc 45%, #2dd4bf 85%, #0d9488 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Holographic Glare Overlay */
+.hologram-glare {
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(45, 212, 191, 0.12) 30%,
+    transparent 70%
+  );
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  transition: opacity 0.3s ease;
+}
+
+/* Keyframe animations */
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes slideUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float3d {
+  0%, 100% {
+    transform: translateY(0px) rotateX(0deg) rotateY(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotateX(4deg) rotateY(-3deg);
+  }
+}
+
+.animate-float-3d {
+  animation: float3d 6s ease-in-out infinite;
+}
+
+/* Custom Sleek Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(20, 184, 166, 0.4);
+}
+
+/* ==========================================================================
+   ShopSphere Multi-Theme System: Graphite Mono, Vintage Paper, Cyber Dark
+   ========================================================================== */
+
+:root, [data-theme="cyber"] {
+  --theme-bg: #04060b;
+  --theme-surface: #080c16;
+  --theme-card: #0e1526;
+  --theme-border: rgba(255, 255, 255, 0.1);
+  --theme-text-primary: #f1f5f9;
+  --theme-text-secondary: #94a3b8;
+  --theme-accent: #14b8a6;
+  --theme-accent-hover: #0d9488;
+  color-scheme: dark;
+}
+
+/* ==========================================================================
+   ShopSphere Unified Theme System: Luxe Light & Cyber Dark
+   ========================================================================== */
+
+/* Single Best Light Theme: Crisp, high-contrast, modern luxury aesthetic */
+[data-theme="light"], [data-theme="graphite"], [data-theme="vintage"] {
+  --theme-bg: #f8fafc;
+  --theme-surface: #ffffff;
+  --theme-card: #ffffff;
+  --theme-border: #e2e8f0;
+  --theme-text-primary: #0f172a;
+  --theme-text-secondary: #475569;
+  --theme-accent: #0d9488;
+  --theme-accent-hover: #0f766e;
+  color-scheme: light;
+}
+
+[data-theme="light"] body,
+[data-theme="light"] .app-root,
+[data-theme="graphite"] body,
+[data-theme="graphite"] .app-root {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .bg-dark-950,
+[data-theme="light"] .bg-dark-900,
+[data-theme="light"] .bg-\[\#04060b\],
+[data-theme="graphite"] .bg-dark-950,
+[data-theme="graphite"] .bg-dark-900,
+[data-theme="graphite"] .bg-\[\#04060b\] {
+  background-color: #f8fafc !important;
+}
+
+[data-theme="light"] .bg-dark-850,
+[data-theme="light"] .bg-dark-800,
+[data-theme="graphite"] .bg-dark-850,
+[data-theme="graphite"] .bg-dark-800 {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .bg-dark-700,
+[data-theme="graphite"] .bg-dark-700 {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .text-white,
+[data-theme="light"] .text-gray-100,
+[data-theme="light"] .text-gray-200,
+[data-theme="graphite"] .text-white,
+[data-theme="graphite"] .text-gray-100,
+[data-theme="graphite"] .text-gray-200 {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .text-gray-300,
+[data-theme="light"] .text-gray-400,
+[data-theme="graphite"] .text-gray-300,
+[data-theme="graphite"] .text-gray-400 {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .text-gray-500,
+[data-theme="graphite"] .text-gray-500 {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .border-white\/5,
+[data-theme="light"] .border-white\/10,
+[data-theme="light"] .border-white\/15,
+[data-theme="light"] .border-white\/20,
+[data-theme="graphite"] .border-white\/5,
+[data-theme="graphite"] .border-white\/10,
+[data-theme="graphite"] .border-white\/15,
+[data-theme="graphite"] .border-white\/20 {
+  border-color: #e2e8f0 !important;
+}
+
+[data-theme="light"] .glass-panel,
+[data-theme="light"] .glass-panel-3d,
+[data-theme="graphite"] .glass-panel,
+[data-theme="graphite"] .glass-panel-3d {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.04) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] input,
+[data-theme="light"] select,
+[data-theme="light"] textarea,
+[data-theme="graphite"] input,
+[data-theme="graphite"] select,
+[data-theme="graphite"] textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+[data-theme="light"] .bg-black\/40,
+[data-theme="light"] .bg-black\/50,
+[data-theme="light"] .bg-black\/60,
+[data-theme="graphite"] .bg-black\/40,
+[data-theme="graphite"] .bg-black\/50,
+[data-theme="graphite"] .bg-black\/60 {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .from-white.via-slate-100.to-teal-300,
+[data-theme="graphite"] .from-white.via-slate-100.to-teal-300 {
+  background: linear-gradient(135deg, #0f172a 0%, #0d9488 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+[data-theme="light"] .from-teal-200.via-brand-400.to-cyan-300,
+[data-theme="graphite"] .from-teal-200.via-brand-400.to-cyan-300 {
+  background: linear-gradient(135deg, #0f172a 0%, #0d9488 60%, #0284c7 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+[data-theme="light"] .bg-gradient-to-r.from-white.to-gray-200.text-dark-950,
+[data-theme="graphite"] .bg-gradient-to-r.from-white.to-gray-200.text-dark-950 {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.25) !important;
+}
+
