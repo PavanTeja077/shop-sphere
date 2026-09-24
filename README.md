@@ -1,6 +1,9 @@
 # ShopSphere 🌐🛒
 **Next-Generation Spatial 3D Multi-Vendor eCommerce Platform**
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/PavanTeja077/shop-sphere)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FPavanTeja077%2Fshop-sphere&root-directory=frontend&env=VITE_API_URL&envDescription=URL%20of%20your%20Render%20backend%20API)
+
 ShopSphere is a full-stack, enterprise-ready multi-vendor eCommerce ecosystem featuring spatial 3D interactive product rendering, intelligent vendor cart splitting, real-time logistics tracking, AI shopping copilot, customer-support live desk, Google 1-click registration/authentication, and dual high-contrast visual themes (**Luxe Light** & **Cyber Dark**).
 
 ---
