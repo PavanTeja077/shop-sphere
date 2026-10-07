@@ -26,6 +26,13 @@ import ThreeDProductCard from './components/3d/ThreeDProductCard';
 import fallbackProducts from './data/products.json';
 import { getProductImageUrl } from './utils/imageUrl';
 import { API_BASE_URL } from './config/api';
+import { 
+  getSavedCustomSellerProducts, 
+  saveCustomSellerProduct, 
+  updateCustomSellerProduct, 
+  deleteCustomSellerProduct, 
+  restockCustomSellerProduct 
+} from './utils/productStorage';
 
 export default function App() {
   const { tiltX, tiltY, isGyroscope, rawRoll, rawPitch, requestPermission } = useMotionSensors();
@@ -36,7 +43,15 @@ export default function App() {
   const [visibleCount, setVisibleCount] = useState(24);
   const searchInputRef = useRef(null);
 
-  const [products, setProducts] = useState(fallbackProducts || []);
+  const [products, setProducts] = useState(() => {
+    try {
+      const custom = getSavedCustomSellerProducts();
+      const existingFallback = fallbackProducts || [];
+      return [...custom, ...existingFallback.filter(p => !custom.some(c => c._id === p._id))];
+    } catch (e) {
+      return fallbackProducts || [];
+    }
+  });
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState(() => {
     try {
@@ -293,8 +308,59 @@ export default function App() {
   };
 
   const handleProductAdded = (newProduct) => {
-    setProducts(prev => [newProduct, ...prev]);
+    saveCustomSellerProduct(newProduct);
+    setProducts(prev => [newProduct, ...prev.filter(p => p._id !== newProduct._id)]);
+    showInAppAlert({
+      title: 'Product Live on Marketplace!',
+      message: `"${newProduct.name}" has been published successfully!\n\nIt is now live on the customer marketplace display and available for immediate purchase.`,
+      type: 'success',
+      confirmText: 'View in Marketplace',
+      cancelText: 'Stay in Seller Hub',
+      onConfirm: () => {
+        setView('customer');
+        if (newProduct.category) {
+          setActiveCategory(newProduct.category);
+        }
+        setTimeout(() => {
+          const el = document.getElementById('catalog-section');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 200);
+      }
+    });
+  };
+
+  const handleProductUpdated = (updatedProduct) => {
+    updateCustomSellerProduct(updatedProduct._id, updatedProduct);
+    setProducts(prev => prev.map(p => p._id === updatedProduct._id ? { ...p, ...updatedProduct } : p));
+  };
+
+  const handleProductDeleted = (productId) => {
+    deleteCustomSellerProduct(productId);
+    setProducts(prev => prev.filter(p => p._id !== productId));
+  };
+
+  const handleRestockProduct = (productId, delta) => {
+    restockCustomSellerProduct(productId, delta);
+    setProducts(prev => prev.map(p => {
+      if (p._id === productId) {
+        const currentStock = p.stock !== undefined ? p.stock : (p.inventory || 0);
+        const newStock = Math.max(0, currentStock + delta);
+        return { ...p, stock: newStock, inventory: newStock };
+      }
+      return p;
+    }));
+  };
+
+  const handleNavigateToProduct = (productId) => {
     setView('customer');
+    const target = products.find(p => p._id === productId);
+    if (target && target.category) {
+      setActiveCategory(target.category);
+    }
+    setTimeout(() => {
+      const el = document.getElementById('catalog-section');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }, 200);
   };
 
   const handleToggleCompare = (product) => {
@@ -321,14 +387,15 @@ export default function App() {
   };
 
   useEffect(() => {
-    // Fetch products from backend
+    // Fetch products from backend and merge with custom seller products
     const fetchProducts = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/products`);
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         if (Array.isArray(data) && data.length > 0) {
-          setProducts(data);
+          const custom = getSavedCustomSellerProducts();
+          setProducts([...custom, ...data.filter(p => !custom.some(c => c._id === p._id))]);
         }
       } catch (error) {
         console.error("Failed to fetch products from API, using archive dataset fallback", error);
@@ -458,19 +525,46 @@ export default function App() {
     }
   };
 
-  const categories = ['All', 'Jeans', 'Sofa', 'T-Shirt', 'TV'];
+  const categories = useMemo(() => {
+    const base = ['All', 'Electronics', 'Furniture', 'Jeans', 'Sofa', 'T-Shirt', 'TV', 'Wearables', 'Home'];
+    const customCats = new Set();
+    products.forEach(p => {
+      if (p.category) {
+        const trimmed = p.category.trim();
+        if (trimmed) customCats.add(trimmed);
+      }
+    });
+    const list = ['All'];
+    base.slice(1).forEach(b => {
+      if (!list.includes(b)) list.push(b);
+    });
+    customCats.forEach(c => {
+      if (!list.some(item => item.toLowerCase() === c.toLowerCase())) {
+        list.push(c);
+      }
+    });
+    return list;
+  }, [products]);
 
   const categoryCounts = useMemo(() => {
-    const counts = { 'All': products.length, 'Jeans': 0, 'Sofa': 0, 'T-Shirt': 0, 'TV': 0 };
+    const counts = { 'All': products.length };
+    categories.forEach(c => {
+      if (c !== 'All') counts[c] = 0;
+    });
     products.forEach(p => {
-      const cat = p.category?.toLowerCase() || '';
-      if (cat === 'jeans') counts['Jeans']++;
-      else if (cat === 'sofa') counts['Sofa']++;
-      else if (cat === 't-shirt' || cat === 'tshirt') counts['T-Shirt']++;
-      else if (cat === 'tv') counts['TV']++;
+      const pCat = p.category?.trim().toLowerCase() || '';
+      categories.forEach(c => {
+        if (c === 'All') return;
+        const target = c.toLowerCase();
+        if (target === 't-shirt' && (pCat === 't-shirt' || pCat === 'tshirt')) {
+          counts[c] = (counts[c] || 0) + 1;
+        } else if (pCat === target) {
+          counts[c] = (counts[c] || 0) + 1;
+        }
+      });
     });
     return counts;
-  }, [products]);
+  }, [products, categories]);
 
   const handleCategoryChange = (cat) => {
     setActiveCategory(cat);
@@ -880,7 +974,15 @@ export default function App() {
 
       {/* View Switcher: Customer Marketplace vs Role Portals */}
       {view === 'seller' ? (
-        <SellerDashboard onProductAdded={handleProductAdded} onBack={() => setView('customer')} />
+        <SellerDashboard 
+          products={products}
+          onProductAdded={handleProductAdded}
+          onProductUpdated={handleProductUpdated}
+          onProductDeleted={handleProductDeleted}
+          onRestockProduct={handleRestockProduct}
+          onNavigateToProduct={handleNavigateToProduct}
+          onBack={() => setView('customer')} 
+        />
       ) : view === 'post-purchase' ? (
         <PostPurchaseCenter currentUser={currentUser} onNavigateView={handleNavigateView} />
       ) : view === 'admin' ? (
@@ -1090,7 +1192,7 @@ export default function App() {
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
                   {/* Category Pills with live item counts */}
                   <div className="flex flex-wrap gap-2">
-                    {categories.map(cat => {
+                    {categories.filter(cat => cat === 'All' || (categoryCounts[cat] || 0) > 0).map(cat => {
                       const count = categoryCounts[cat] || 0;
                       const isActive = activeCategory === cat;
                       return (
