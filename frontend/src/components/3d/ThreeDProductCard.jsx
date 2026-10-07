@@ -3,6 +3,8 @@ import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Award, Scale, ShoppingBag, Star, Sparkles } from 'lucide-react';
 
+import { API_BASE_URL } from '../../config/api';
+
 export default function ThreeDProductCard({
   product,
   isCompared,
@@ -122,7 +124,7 @@ export default function ThreeDProductCard({
           <img
             src={
               product.imageUrl?.startsWith('/uploads/')
-                ? `http://localhost:5000${product.imageUrl}`
+                ? `${API_BASE_URL}${product.imageUrl}`
                 : (product.imageUrl || product.image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80')
             }
             alt={product.name}

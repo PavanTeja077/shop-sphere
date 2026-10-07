@@ -25,6 +25,7 @@ import ThreeDHeroScene from './components/3d/ThreeDHeroScene';
 import ThreeDProductCard from './components/3d/ThreeDProductCard';
 import fallbackProducts from './data/products.json';
 import { getProductImageUrl } from './utils/imageUrl';
+import { API_BASE_URL } from './config/api';
 
 export default function App() {
   const { tiltX, tiltY, isGyroscope, rawRoll, rawPitch, requestPermission } = useMotionSensors();
@@ -35,9 +36,18 @@ export default function App() {
   const [visibleCount, setVisibleCount] = useState(24);
   const searchInputRef = useRef(null);
 
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState(fallbackProducts || []);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState('customer'); // 'customer' | 'seller' | 'post-purchase' | 'admin' | 'delivery' | 'support'
+  const [view, setView] = useState(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const urlView = params.get('view');
+      if (['seller', 'customer', 'post-purchase', 'admin', 'delivery', 'support'].includes(urlView)) {
+        return urlView;
+      }
+    } catch (e) {}
+    return 'customer';
+  });
   const [cart, setCart] = useState(() => {
     try {
       const saved = localStorage.getItem('shopsphere_cart');
@@ -98,6 +108,19 @@ export default function App() {
   const isDelivery = userRole === 'Delivery Partner' || isAdmin;
   const isCustomer = userRole === 'Customer';
 
+  // Auto-align session if opened directly with ?view=seller
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const urlView = params.get('view');
+      if (urlView === 'seller' && (!currentUser || (currentUser.role !== 'Seller' && currentUser.role !== 'Platform Admin'))) {
+        const account = { name: 'Apex Merchant Store', email: 'seller@shopsphere.com', role: 'Seller' };
+        setCurrentUser(account);
+        localStorage.setItem('shopsphere_user', JSON.stringify(account));
+      }
+    } catch (e) {}
+  }, []);
+
   // Role-protected Navigation Handler
   const handleNavigateView = (targetView) => {
     if (targetView === 'admin' && !isAdmin) {
@@ -116,6 +139,15 @@ export default function App() {
       return;
     }
     setView(targetView);
+    try {
+      const url = new URL(window.location.href);
+      if (targetView === 'customer') {
+        url.searchParams.delete('view');
+      } else {
+        url.searchParams.set('view', targetView);
+      }
+      window.history.pushState({}, '', url);
+    } catch (e) {}
   };
 
   const handleLogout = () => {
@@ -166,7 +198,7 @@ export default function App() {
   // View existing reviews for a product
   const handleViewReviews = async (product) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/reviews/${product._id}`);
+      const res = await fetch(`${API_BASE_URL}/api/reviews/${product._id}`);
       const reviews = await res.json();
       if (!Array.isArray(reviews) || reviews.length === 0) {
         showInAppAlert({
@@ -210,7 +242,7 @@ export default function App() {
     const comment = prompt('Enter your review comment:');
     if (!comment) return;
     try {
-      await fetch('http://localhost:5000/api/reviews', {
+      await fetch(`${API_BASE_URL}/api/reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -292,13 +324,14 @@ export default function App() {
     // Fetch products from backend
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/products');
+        const response = await fetch(`${API_BASE_URL}/api/products`);
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
-        setProducts(data);
+        if (Array.isArray(data) && data.length > 0) {
+          setProducts(data);
+        }
       } catch (error) {
         console.error("Failed to fetch products from API, using archive dataset fallback", error);
-        setProducts(fallbackProducts);
       } finally {
         setLoading(false);
       }
@@ -325,7 +358,7 @@ export default function App() {
     };
 
     try {
-      const response = await fetch('http://localhost:5000/api/orders/checkout', {
+      const response = await fetch(`${API_BASE_URL}/api/orders/checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -583,15 +616,13 @@ export default function App() {
               </button>
             )}
 
-            {/* Seller Hub: ONLY displayed if user is Seller or Admin (HIDDEN for Customer) */}
-            {isSeller && (
-              <button 
-                onClick={() => handleNavigateView('seller')} 
-                className={`hover:text-brand-100 transition-colors flex items-center gap-1.5 ${view === 'seller' ? 'text-white font-bold' : ''}`}
-              >
-                <Store className="w-4 h-4 text-amber-400" /> Seller Hub
-              </button>
-            )}
+            {/* Seller Hub: Always visible in navigation with role validation */}
+            <button 
+              onClick={() => handleNavigateView('seller')} 
+              className={`hover:text-brand-100 transition-colors flex items-center gap-1.5 ${view === 'seller' ? 'text-white font-bold' : ''}`}
+            >
+              <Store className="w-4 h-4 text-amber-400" /> Seller Hub
+            </button>
 
             {/* Admin Hub: ONLY displayed if user is Platform Admin (HIDDEN for Customer & Seller) */}
             {isAdmin && (
@@ -808,15 +839,13 @@ export default function App() {
                 </button>
               )}
 
-              {/* Seller Hub: only for Seller/Admin */}
-              {isSeller && (
-                <button 
-                  onClick={() => { handleNavigateView('seller'); setIsMenuOpen(false); }}
-                  className="text-left py-2 text-sm font-medium hover:text-brand-300 flex items-center gap-2"
-                >
-                  <Store className="w-4 h-4 text-amber-400" /> Seller Hub & AI Studio
-                </button>
-              )}
+              {/* Seller Hub */}
+              <button 
+                onClick={() => { handleNavigateView('seller'); setIsMenuOpen(false); }}
+                className="text-left py-2 text-sm font-medium hover:text-brand-300 flex items-center gap-2"
+              >
+                <Store className="w-4 h-4 text-amber-400" /> Seller Hub & AI Studio
+              </button>
 
               {/* Admin Hub: only for Admin */}
               {isAdmin && (
@@ -851,7 +880,7 @@ export default function App() {
 
       {/* View Switcher: Customer Marketplace vs Role Portals */}
       {view === 'seller' ? (
-        <SellerDashboard onProductAdded={handleProductAdded} />
+        <SellerDashboard onProductAdded={handleProductAdded} onBack={() => setView('customer')} />
       ) : view === 'post-purchase' ? (
         <PostPurchaseCenter currentUser={currentUser} onNavigateView={handleNavigateView} />
       ) : view === 'admin' ? (

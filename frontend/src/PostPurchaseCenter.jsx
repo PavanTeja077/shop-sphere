@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { showInAppAlert, showInAppToast } from './components/InAppNotificationModal';
 import { getProductImageUrl, handleImageErrorFallback } from './utils/imageUrl';
+import { API_BASE_URL } from './config/api';
 
 export default function PostPurchaseCenter({ currentUser, onNavigateView }) {
   const [activeTab, setActiveTab] = useState('tracking'); // tracking | returns | support
@@ -36,7 +37,7 @@ export default function PostPurchaseCenter({ currentUser, onNavigateView }) {
     // 2. Fetch from backend
     try {
       const customerId = currentUser?._id || '65f0a1b2c3d4e5f6a7b8c9d0';
-      const res = await fetch(`http://localhost:5000/api/orders/customer/${customerId}`);
+      const res = await fetch(`${API_BASE_URL}/api/orders/customer/${customerId}`);
       if (res.ok) {
         const backendOrders = await res.json();
         if (Array.isArray(backendOrders) && backendOrders.length > 0) {
@@ -175,7 +176,7 @@ export default function PostPurchaseCenter({ currentUser, onNavigateView }) {
     };
 
     try {
-      await fetch('http://localhost:5000/api/returns', {
+      await fetch(`${API_BASE_URL}/api/returns`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

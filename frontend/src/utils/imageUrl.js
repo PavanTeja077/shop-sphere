@@ -13,6 +13,6 @@ export function getProductImageUrl(productOrUrl) {
 export function handleImageErrorFallback(e, productOrUrl) {
   const raw = typeof productOrUrl === 'string' ? productOrUrl : (productOrUrl?.imageUrl || productOrUrl?.image || '');
   if (raw && raw.includes('/ecommerce products/')) {
-    e.target.src = raw.replace(API_BASE_URL, '').replace('http://localhost:5000', '').replace('/uploads', '');
+    e.target.src = raw.replace(API_BASE_URL, '').replace('/uploads', '');
   }
 }

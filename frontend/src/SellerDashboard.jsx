@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Package, DollarSign, TrendingUp, AlertCircle, Sparkles, CheckCircle2, 
-  Layers, Plus, Search, ShieldCheck, ArrowUpRight, BarChart2 
+  Layers, Plus, Search, ShieldCheck, ArrowUpRight, BarChart2, ArrowLeft 
 } from 'lucide-react';
 import SellerAddProduct from './components/SellerAddProduct';
 import TextScrollWordReveal from './components/TextScrollWordReveal';
 import { showInAppAlert, showInAppToast } from './components/InAppNotificationModal';
 
-export default function SellerDashboard({ onProductAdded }) {
+export default function SellerDashboard({ onProductAdded, onBack }) {
   const [isFixing, setIsFixing] = useState(false);
   const [fixed, setFixed] = useState(false);
   const [inventorySearch, setInventorySearch] = useState('');
@@ -241,11 +241,19 @@ export default function SellerDashboard({ onProductAdded }) {
 
   return (
     <div className="pt-24 px-6 max-w-7xl mx-auto min-h-screen pb-24 text-white">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <h1 className="text-3xl font-bold">Seller Dashboard</h1>
           <p className="text-gray-400">Manage your store, list new products, fulfill orders, and monitor health.</p>
         </div>
+        {onBack && (
+          <button
+            onClick={onBack}
+            className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 border border-white/10 shrink-0"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back to Marketplace
+          </button>
+        )}
       </div>
 
       {/* Highlighted Scroll Reveal Section */}
